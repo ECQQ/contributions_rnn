@@ -1,0 +1,9 @@
+*.bin
+*.xlsx
+*.pdf
+*.csv
+*.tsv
+.ipynb_checkpoints/
+experiments/
+__pycache__
+data

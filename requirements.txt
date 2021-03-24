@@ -1,0 +1,9 @@
+tensorflow
+pandas
+joblib
+tensorflow_addons
+nltk
+gensim 
+scikit-learn
+umap-learn
+jupyter-dash
