@@ -12,7 +12,6 @@ from sklearn.metrics import confusion_matrix
 from joblib import Parallel, delayed
 
 
-
 def plot_cm(y_true, y_pred, display_labels, ax):
     cm = confusion_matrix(y_true, y_pred, normalize='true')
     cm = np.round(cm, 2)
@@ -22,7 +21,7 @@ def plot_cm(y_true, y_pred, display_labels, ax):
 
     # # NOTE: Fill all variables here with default values of the plot_confusion_matrix
     disp = disp.plot(cmap='Blues', ax=ax, xticks_rotation=90)
-    return ax 
+    return ax
 
 def get_metrics(path_logs):
     train_logs = [x for x in os.listdir(path_logs) if x.endswith('.v2')][0]
@@ -37,7 +36,7 @@ def get_metrics(path_logs):
             steps.append(t[1])
             values.append(t[2])
         metrics[metric] = {'steps':steps, 'values': values}
-        
+
     return metrics
 
 def fn(x):
@@ -51,7 +50,7 @@ def label_df(data, partial, n_jobs=None):
     print('[INFO] Using {} cores'.format(n_jobs))
 
     def step(row, partial):
-        r = partial[partial['text'] == row['text']] 
+        r = partial[partial['text'] == row['text']]
         if r.shape[0] == 0:
             y_pred = 'NR'
         else:
@@ -73,5 +72,5 @@ def label_df(data, partial, n_jobs=None):
     # Sanity check
     final['tokens'] = final['tokens'].apply(lambda x: fn(x))
     final[final['tokens'] =='NR'] = final[final['tokens'] =='NR'].replace('Trabajo','NR')
-    
+
     return final

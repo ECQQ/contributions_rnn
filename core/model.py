@@ -34,56 +34,58 @@ class RNNModel(Model):
         return x
 
     def train_step(self, data):
-        x, l, y_true, _, _ = data
-        mask = create_mask(x, l)
+        mask = create_mask(data['input'], data['length'])
         with tf.GradientTape() as tape:
-            y_pred = self((x, mask), training=True)
-            t_loss = self.compiled_loss(y_true, y_pred)
+            y_pred = self((data['input'], mask), training=True)
+            t_loss = self.compiled_loss(data['label'], y_pred)
 
         gradients = tape.gradient(t_loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
-        self.compiled_metrics.update_state(y_true, y_pred)
+        self.compiled_metrics.update_state(data['label'], y_pred)
         return {m.name: m.result() for m in self.metrics}
 
     def test_step(self, data):
-        x, l, y_true, _, _ = data
-        mask = create_mask(x, l)
+        mask = create_mask(data['input'], data['length'])
         with tf.GradientTape() as tape:
-            y_pred = self((x, mask), training=False)
-            t_loss = self.compiled_loss(y_true, y_pred)
+            y_pred = self((data['input'], mask), training=False)
+            t_loss = self.compiled_loss(data['label'], y_pred)
 
-        self.compiled_metrics.update_state(y_true, y_pred)
+        self.compiled_metrics.update_state(data['label'], y_pred)
         return {m.name: m.result() for m in self.metrics}
 
     def predict_step(self, data):
-        x, l, y_true, text, _ = data
-        mask = create_mask(x, l)
-        y_pred = self((x, mask), training=False)
-        self.compiled_metrics.update_state(y_true, y_pred)
-        return tf.argmax(y_pred, 1),  tf.argmax(y_true, 1), text
+        mask = create_mask(data['input'], data['length'])
+        y_pred = self((data['input'], mask), training=False)
+
+        if 'label' in data.keys():
+            return tf.argmax(y_pred, 1),  tf.argmax(data['label'], 1), data['text']
+        else:
+            return tf.argmax(y_pred, 1),  data['text']
 
     def predict_proba(self, data):
 
         probas = []
         trues = []
         texts = []
-        for x, l, y_true, text, _ in data: 
-            mask = create_mask(x, l)
-            y_pred = self((x, mask), training=False)
+        for batch in data:
+            mask = create_mask(batch['input'], batch['length'])
+            y_pred = self((batch['input'], mask), training=False)
             probas.append(y_pred)
-            trues.append(tf.argmax(y_true, 1))
-            texts.append(text)
-        return tf.concat(probas, 0), tf.concat(trues, 0), tf.concat(texts, 0) 
+            trues.append(tf.argmax(batch['label'], 1))
+            texts.append(batch['text'])
+        return tf.concat(probas, 0), tf.concat(trues, 0), tf.concat(texts, 0)
 
     def get_latent(self, data):
 
         states = []
         trues = []
         texts = []
-        for x, l, y_true, text, _ in data: 
-            mask = create_mask(x, l)
-            h = self.lstm_layer(x, mask=mask, training=False)
+        for batch in data:
+            mask = create_mask(batch['input'], batch['length'])
+
+            h = self.lstm_layer(batch['input'], mask=mask, training=False)
             states.append(h)
-            trues.append(tf.argmax(y_true, 1))
-            texts.append(text)
-        return tf.concat(states, 0), tf.concat(trues, 0), tf.concat(texts, 0) 
+            trues.append(tf.argmax(batch['label'], 1))
+            texts.append(batch['text'])
+
+        return tf.concat(states, 0), tf.concat(trues, 0), tf.concat(texts, 0)

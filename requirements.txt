@@ -3,7 +3,7 @@ pandas
 joblib
 tensorflow_addons
 nltk
-gensim 
+gensim==3.8.3
 scikit-learn
 umap-learn
 jupyter-dash

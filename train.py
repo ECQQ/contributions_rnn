@@ -5,7 +5,6 @@ import os
 
 from core.data import load_records
 from core.model import RNNModel
-from core.ae import RAE
 from core.callbacks import get_callbacks
 from core.losses import MaskedCrossEntropy
 from core.metrics import MaskedACC, CustomAccuracy
@@ -14,8 +13,6 @@ from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics import Recall, CategoricalAccuracy
 from tensorflow.keras.optimizers import RMSprop, Adam
 
-from transformers import XLMTokenizer
-tokenizer = XLMTokenizer.from_pretrained("xlm-mlm-100-1280")
 
 def train(opt):
     train_batches, n_cls = load_records(os.path.join(opt.data, 'train'),
@@ -30,22 +27,12 @@ def train(opt):
     val_batches = val_batches.take(opt.n_batches).cache()
     test_batches = test_batches.take(opt.n_batches).cache()
 
-    if opt.model == 'ae':
-        model = RAE(num_units=opt.units,
-                    num_layers=opt.layers,
-                    voc_size=opt.vocab_size,
-                    zdim=opt.zdim,
-                    dropout=opt.dropout)
-        loss = MaskedCrossEntropy()
-        metrics = [MaskedACC()]
-
-    if opt.model == 'rnn':
-        model = RNNModel(num_units=opt.units,
-                         num_layers=opt.layers,
-                         num_cls=n_cls,
-                         dropout=opt.dropout)
-        loss = CategoricalCrossentropy()
-        metrics = [Recall(), CustomAccuracy()]
+    model = RNNModel(num_units=opt.units,
+                     num_layers=opt.layers,
+                     num_cls=n_cls,
+                     dropout=opt.dropout)
+    loss = CategoricalCrossentropy()
+    metrics = [Recall(), CustomAccuracy()]
 
 
     model.model(opt.batch_size).summary()
@@ -83,8 +70,6 @@ if __name__ == '__main__':
                         help='Proyect path. Here will be stored weights and metrics')
     parser.add_argument('--batch-size', default=64, type=int,
                         help='batch size')
-    parser.add_argument('--vocab_size', default=tokenizer.vocab_size, type=int,
-                        help='vocabulary size')
     parser.add_argument('--epochs', default=2000, type=int,
                         help='Number of epochs')
     parser.add_argument('--n-batches', default=100, type=int,
@@ -100,8 +85,6 @@ if __name__ == '__main__':
                         help='Dropout applied to the output of the RNN')
     parser.add_argument('--lr', default=1e-3, type=int,
                         help='Optimizer learning rate')
-    parser.add_argument('--model', default='rnn', type=str,
-                        help='autoencoder (ae) or recurrent neural network (rnn)')
 
     opt = parser.parse_args()
 
