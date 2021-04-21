@@ -3,7 +3,7 @@
 
 En este repositorio se encuentra el modelo utilizado para clasificar las contribuciones.
 
-![](https://github.com/ECQQ/contributions_rnn/blob/main/figures/cm.png)
+![]https://github.com/ECQQ/contributions_rnn/blob/main/figures/cm.png?raw=true)
 
 ### Requisitos
 - [Docker](https://docs.docker.com/engine/install/)
