@@ -65,6 +65,6 @@ python train.py --data ./out/records/fold_0/ --p ./experiments/fold_0 --n-batche
 ##### Evaluacion y prediccion
 El notebook tutorial se encuentra en `Results.ipynb` sigue las instruccion para cargar los pesos del modelo ajustado, evaluar y etiquetar las muestras.
 
-Al final del notebook, dejamos dos ejemplos explorativos para futuras investigaciones:
+Al final del notebook, dejamos dos ejemplos explorativos para futuras investigaciones, tales como la **visualizacion del estado oculto** de la red y la **entropia de las clases** dada las probabilidades de salida del modelo.
 
 ![](https://github.com/ECQQ/contributions_rnn/blob/main/figures/entropy.png?raw=true)
