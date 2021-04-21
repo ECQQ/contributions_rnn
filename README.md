@@ -5,6 +5,10 @@ En este repositorio se encuentra el modelo utilizado para clasificar las contrib
 
 ![](https://github.com/ECQQ/contributions_rnn/blob/main/figures/cm.png?raw=true)
 
+Metric | Precision | Recall | Macro F1 |
+--- | --- | --- | --- |
+Value | 0.64 +- 0.07 | 0.64 +- 0.06 | 0.61 +- 0.08 |
+
 ### Requisitos
 - [Docker](https://docs.docker.com/engine/install/)
 - [Docker-compose](https://docs.docker.com/compose/install/)
